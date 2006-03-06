@@ -3,7 +3,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2005 Robert Lemke (robert@typo3.org)
+*  (c) 2005-2006 Robert Lemke (robert@typo3.org)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -30,7 +30,10 @@
  * @author	Robert Lemke <robert@typo3.org>
  */
 
-class tx_terdocdocbook {
+require_once (t3lib_extMgm::extPath('ter_doc').'class.tx_terdoc_api.php');
+require_once (t3lib_extMgm::extPath('ter_doc').'class.tx_terdoc_documentformat.php');
+
+class tx_terdocdocbook extends tx_terdoc_documentformat_download {
 
 	/**
 	 * Renders the cache for a DocBook download version. The result consists
@@ -65,7 +68,8 @@ class tx_terdocdocbook {
 	 * @access	public
 	 */
 	public function isAvailable ($extensionKey, $version) {
-		$documentDir = $this->getDocumentDirOfExtensionVersion ($extensionKey, $version);
+		$docApiObj = tx_terdoc_api::getInstance();		
+		$documentDir = $docApiObj->getDocumentDirOfExtensionVersion ($extensionKey, $version);
 		return @is_file ($documentDir.'docbook/manual.zip');
 	}
 
@@ -78,36 +82,24 @@ class tx_terdocdocbook {
 	 * @access	public
 	 */
 	public function getDownloadFileSize ($extensionKey, $version) {
-		$documentDir = $this->getDocumentDirOfExtensionVersion ($extensionKey, $version);
+		$docApiObj = tx_terdoc_api::getInstance();		
+		$documentDir = $docApiObj->getDocumentDirOfExtensionVersion ($extensionKey, $version);
 		return @filesize ($documentDir.'docbook/manual.zip');
 	}
 
-
-
-
-
-	
 	/**
-	 * Returns the full path of the document directory for the specified
-	 * extension version. If the path does not exist yet, it will be created - 
-	 * given that the typo3temp/tx_terdoc/documentscache/ dir exists.  
-	 * 
-	 * In the document directory all rendered documents are stored.
-	 * 
-	 * @param	string		$extensionKey: The extension key
-	 * @param	string		$version: The version string
-	 * @return	string		Full path to the document directory for the specified extension version
+	 * Returns the full (absolute) path including the file name of the file
+	 * which can be downloaded
+	 *
+	 * @param	string		$extensionKey: Extension key of the document
+	 * @param	string		$version: Version number of the document
+	 * @return	mixed		Absolute path including file name of the downloadable file or FALSE if the file does not exist		
+	 * @access	public
 	 */
-	protected function getDocumentDirOfExtensionVersion ($extensionKey, $version) {
-		$firstLetter = strtolower (substr ($extensionKey, 0, 1));
-		$secondLetter = strtolower (substr ($extensionKey, 1, 1));
-		$baseDir = PATH_site.'typo3temp/tx_terdoc/documentscache/';
-
- 		list ($majorVersion, $minorVersion, $devVersion) = t3lib_div::intExplode ('.', $version);
-		$fullPath = $baseDir.$firstLetter.'/'.$secondLetter.'/'.strtolower($extensionKey).'-'.$majorVersion.'.'.$minorVersion.'.'.$devVersion;
-						
-		return $fullPath.'/';		
+	public function getDownloadFileFullPath ($extensionKey, $version) {
+		$docApiObj = tx_terdoc_api::getInstance();		
+		$documentDir = $docApiObj->getDocumentDirOfExtensionVersion ($extensionKey, $version);
+		return @is_file ($documentDir.'docbook/manual.zip') ? $documentDir.'docbook/manual.zip' : FALSE;		
 	}
-	
 }
 ?>

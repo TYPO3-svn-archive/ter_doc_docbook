@@ -10,7 +10,7 @@
     </meta>
     <data type="array">
         <languageKey index="default" type="array">
-            <label index="format_docbook">DocBook (ZIP w/images)</label>
+            <label index="format_docbook">DocBook (ZIP with images)</label>
         </languageKey>
         <languageKey index="dk" type="array">
         </languageKey>
